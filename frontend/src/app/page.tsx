@@ -202,7 +202,7 @@ export default function Home() {
       ══════════════════════════════════════════════════════════════════ */}
       <section className="max-w-[1440px] mx-auto border-x border-b border-black py-32 bg-white relative overflow-hidden reveal">
         <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          className="absolute inset-0 opacity-[0.2] pointer-events-none"
           style={{
             backgroundImage: "url('/images/analysis.svg')",
             backgroundSize: "700px",
