@@ -4,9 +4,8 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="max-w-[1440px] mx-auto grid-border-x border-b border-black bg-white">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {/* Brand Compartment */}
+    <footer className="min-w-full mx-auto grid-border-x border-b border-black bg-white">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <div className="p-10 grid-border-r border-b lg:border-b-0 border-black space-y-8">
           <Link href="/" className="font-brand text-3xl font-bold tracking-tighter block hover:italic transition-all">
             CIPHERLAB
@@ -17,7 +16,6 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Links Compartments */}
         {[
           {
             title: "Protocol",
@@ -47,10 +45,10 @@ export default function Footer() {
             </ul>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Bottom Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 border-t border-black h-16 divide-x divide-black">
+      <div className="grid grid-cols-1 md:grid-cols-2 border-t border-black h-16 divide-x divide-black max-w-full">
         <div className="px-10 h-full flex items-center font-mono text-[9px] uppercase tracking-widest opacity-40">
           © {currentYear} CIPHERLAB PROJECT •
         </div>

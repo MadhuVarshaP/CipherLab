@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Space_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Providers from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,7 +40,8 @@ const neueMachina = localFont({
 
 export const metadata: Metadata = {
   title: "CipherLab | Privacy-Preserving Research Collaboration",
-  description: "Securely share datasets, run computations in TEEs, and track research contributions with CipherLab.",
+  description:
+    "Securely share datasets, run computations in TEEs, and track research contributions with CipherLab.",
 };
 
 export default function RootLayout({
@@ -50,8 +54,15 @@ export default function RootLayout({
       <body
         className={`${neueMachina.variable} ${inter.variable} ${spaceMono.variable} antialiased font-sans`}
       >
-        {children}
+        <Providers>
+          <Navbar />
+          <div className="pt-16 min-h-screen flex flex-col">
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );
 }
+

@@ -2,26 +2,30 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useWorkspaceContext } from "@/context/workspace";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const { walletAddress } = useWorkspaceContext();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => {};
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { name: "Overview", href: "/" },
-    { name: "Experiments", href: "/features" },
-    { name: "Vault", href: "/workspace" },
-    { name: "Compute", href: "/security" },
-    { name: "Graph", href: "/docs" },
-    { name: "Grants", href: "/treasury" },
+    { name: "Dashboard", href: "/workspace/dashboard" },
+    { name: "Team", href: "/workspace/team" },
+    { name: "Data Vault", href: "/workspace/data-vault" },
+    { name: "Jobs", href: "/workspace/compute-jobs" },
+    { name: "Graph", href: "/workspace/contribution-graph" },
+    { name: "Results", href: "/workspace/results" },
+    { name: "Treasury", href: "/workspace/treasury" },
+    { name: "Activity", href: "/workspace/activity" },
+    { name: "Settings", href: "/workspace/settings" },
   ];
 
   return (
@@ -37,38 +41,40 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Links Section - Hidden on Mobile */}
+        {/* Center nav (workspace) - Hidden on Mobile */}
         <div className="hidden lg:flex flex-1 h-full items-center">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="px-6 h-full flex items-center text-[15px] tracking-widest hover:bg-black hover:text-white transition-all "
-              style={{ fontFamily: "var(--font-neue-machina), sans-serif" }}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active =
+              pathname === link.href || pathname?.startsWith(link.href + "/");
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-6 h-full flex items-center text-[13px] tracking-widest transition-all ${
+                  active ? "bg-black text-white" : "hover:bg-black hover:text-white"
+                }`}
+                style={{ fontFamily: "var(--font-neue-machina), sans-serif" }}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
+   
 
-        {/* Right Section / Menu Trigger */}
+        {/* Right Section / Wallet + Menu */}
         <div className="h-full flex items-center ml-auto">
-          <div className="hidden lg:flex h-full items-center px-6 border-r border-black bg-black text-white">
+          <div className="hidden lg:flex h-full items-center">
             <Link
-              href="/workspace/create"
-              className="text-[15px] tracking-widest whitespace-nowrap"
+              href="/auth/connect"
+              className="px-6 h-full flex items-center text-[13px] tracking-widest bg-black text-white hover:bg-white hover:text-black transition-all"
               style={{ fontFamily: "var(--font-neue-machina), sans-serif" }}
             >
-              CREATE WORKSPACE
+              {walletAddress
+                ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}`
+                : "Connect Wallet"}
             </Link>
           </div>
-          <button
-            className="px-8 h-full flex items-center text-sm font-bold uppercase tracking-widest hover:bg-[#f5f5f5] transition-colors"
-            style={{ fontFamily: "var(--font-neue-machina), sans-serif" }}
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? "[ Close ]" : "[ Menu ]"}
-          </button>
         </div>
       </div>
 
@@ -78,7 +84,12 @@ export default function Navbar() {
           <div className="flex-1 p-12 space-y-8">
             <h4 className="font-mono text-[10px] uppercase opacity-40">Navigation</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4">
-              {navLinks.map((link) => (
+              {[
+                { name: "Home", href: "/" },
+                ...navLinks,
+                { name: "Settings", href: "/workspace/settings" },
+                { name: walletAddress ? "Wallet" : "Connect Wallet", href: "/auth/connect" },
+              ].map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
@@ -89,12 +100,8 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
-            <div className="pt-12 flex flex-col space-y-4">
-              <Link href="/signin" className="font-brand text-2xl font-bold uppercase hover:underline">Sign In</Link>
-              <Link href="/workspace/create" className="font-brand text-2xl font-bold uppercase hover:underline">Create Workspace</Link>
-            </div>
           </div>
-          <div className="hidden md:block w-1/3 p-12 bg-[#f5f5f5]">
+          <div className="hidden md:block w-1/3 p-12 bg-secondary">
             <h4 className="font-mono text-[10px] uppercase opacity-40 mb-8">CipherLab Project</h4>
             <p className="font-sans text-sm leading-relaxed mb-12">
               A privacy-preserving research collaboration platform. Securely share datasets,

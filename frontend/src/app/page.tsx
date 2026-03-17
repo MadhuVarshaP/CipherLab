@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Marquee from "@/components/Marquee";
 import Link from "next/link";
 
@@ -37,7 +35,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <Navbar />
 
       <section className="relative w-full min-h-[92vh] flex flex-col justify-end border-b border-black overflow-hidden">
         <video
@@ -236,7 +233,6 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 }
