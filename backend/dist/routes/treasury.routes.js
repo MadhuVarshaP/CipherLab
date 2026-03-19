@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const express_validator_1 = require("express-validator");
+const treasury_controller_1 = require("../controllers/treasury.controller");
+const router = (0, express_1.Router)();
+router.post("/deposit", [(0, express_validator_1.body)("workspaceId").isString().notEmpty()], treasury_controller_1.depositTreasuryController);
+router.post("/distribute", [(0, express_validator_1.body)("workspaceId").isString().notEmpty()], treasury_controller_1.distributeTreasuryController);
+router.get("/:workspaceId", [(0, express_validator_1.param)("workspaceId").isString()], treasury_controller_1.getTreasuryController);
+exports.default = router;

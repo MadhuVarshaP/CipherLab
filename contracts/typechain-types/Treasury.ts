@@ -26,9 +26,9 @@ import type {
 export interface TreasuryInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "contribution"
       | "deposit"
       | "distributeRewards"
-      | "tracker"
       | "workspaceBalance"
   ): FunctionFragment;
 
@@ -36,23 +36,32 @@ export interface TreasuryInterface extends Interface {
     nameOrSignatureOrTopic: "Deposited" | "RewardsDistributed"
   ): EventFragment;
 
-  encodeFunctionData(functionFragment: "deposit", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "contribution",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "deposit",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "distributeRewards",
-    values: [BytesLike, AddressLike[]]
+    values: [BigNumberish, AddressLike[]]
   ): string;
-  encodeFunctionData(functionFragment: "tracker", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "workspaceBalance",
-    values: [BytesLike]
+    values: [BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "contribution",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "distributeRewards",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "tracker", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "workspaceBalance",
     data: BytesLike
@@ -60,10 +69,10 @@ export interface TreasuryInterface extends Interface {
 }
 
 export namespace DepositedEvent {
-  export type InputTuple = [workspaceId: BytesLike, amount: BigNumberish];
-  export type OutputTuple = [workspaceId: string, amount: bigint];
+  export type InputTuple = [workspaceId: BigNumberish, amount: BigNumberish];
+  export type OutputTuple = [workspaceId: bigint, amount: bigint];
   export interface OutputObject {
-    workspaceId: string;
+    workspaceId: bigint;
     amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -73,11 +82,14 @@ export namespace DepositedEvent {
 }
 
 export namespace RewardsDistributedEvent {
-  export type InputTuple = [workspaceId: BytesLike, total: BigNumberish];
-  export type OutputTuple = [workspaceId: string, total: bigint];
+  export type InputTuple = [
+    workspaceId: BigNumberish,
+    totalAmount: BigNumberish
+  ];
+  export type OutputTuple = [workspaceId: bigint, totalAmount: bigint];
   export interface OutputObject {
-    workspaceId: string;
-    total: bigint;
+    workspaceId: bigint;
+    totalAmount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -128,38 +140,38 @@ export interface Treasury extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  deposit: TypedContractMethod<[workspaceId: BytesLike], [void], "payable">;
+  contribution: TypedContractMethod<[], [string], "view">;
+
+  deposit: TypedContractMethod<[workspaceId: BigNumberish], [void], "payable">;
 
   distributeRewards: TypedContractMethod<
-    [workspaceId: BytesLike, contributors: AddressLike[]],
+    [workspaceId: BigNumberish, recipients: AddressLike[]],
     [void],
     "nonpayable"
   >;
 
-  tracker: TypedContractMethod<[], [string], "view">;
-
-  workspaceBalance: TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
+  workspaceBalance: TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
+    nameOrSignature: "contribution"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "deposit"
-  ): TypedContractMethod<[workspaceId: BytesLike], [void], "payable">;
+  ): TypedContractMethod<[workspaceId: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "distributeRewards"
   ): TypedContractMethod<
-    [workspaceId: BytesLike, contributors: AddressLike[]],
+    [workspaceId: BigNumberish, recipients: AddressLike[]],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "tracker"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "workspaceBalance"
-  ): TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
+  ): TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
   getEvent(
     key: "Deposited"
@@ -177,7 +189,7 @@ export interface Treasury extends BaseContract {
   >;
 
   filters: {
-    "Deposited(bytes32,uint256)": TypedContractEvent<
+    "Deposited(uint256,uint256)": TypedContractEvent<
       DepositedEvent.InputTuple,
       DepositedEvent.OutputTuple,
       DepositedEvent.OutputObject
@@ -188,7 +200,7 @@ export interface Treasury extends BaseContract {
       DepositedEvent.OutputObject
     >;
 
-    "RewardsDistributed(bytes32,uint256)": TypedContractEvent<
+    "RewardsDistributed(uint256,uint256)": TypedContractEvent<
       RewardsDistributedEvent.InputTuple,
       RewardsDistributedEvent.OutputTuple,
       RewardsDistributedEvent.OutputObject

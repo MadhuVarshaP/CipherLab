@@ -14,62 +14,62 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "ContributionTracker",
+      name: "Contribution",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ContributionTracker__factory>;
+    ): Promise<Contracts.Contribution__factory>;
     getContractFactory(
       name: "Treasury",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Treasury__factory>;
     getContractFactory(
-      name: "WorkspaceRegistry",
+      name: "Workspace",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.WorkspaceRegistry__factory>;
+    ): Promise<Contracts.Workspace__factory>;
 
     getContractAt(
-      name: "ContributionTracker",
+      name: "Contribution",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.ContributionTracker>;
+    ): Promise<Contracts.Contribution>;
     getContractAt(
       name: "Treasury",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Treasury>;
     getContractAt(
-      name: "WorkspaceRegistry",
+      name: "Workspace",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.WorkspaceRegistry>;
+    ): Promise<Contracts.Workspace>;
 
     deployContract(
-      name: "ContributionTracker",
+      name: "Contribution",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ContributionTracker>;
+    ): Promise<Contracts.Contribution>;
     deployContract(
       name: "Treasury",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Treasury>;
     deployContract(
-      name: "WorkspaceRegistry",
+      name: "Workspace",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.WorkspaceRegistry>;
+    ): Promise<Contracts.Workspace>;
 
     deployContract(
-      name: "ContributionTracker",
+      name: "Contribution",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ContributionTracker>;
+    ): Promise<Contracts.Contribution>;
     deployContract(
       name: "Treasury",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Treasury>;
     deployContract(
-      name: "WorkspaceRegistry",
+      name: "Workspace",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.WorkspaceRegistry>;
+    ): Promise<Contracts.Workspace>;
 
     // default types
     getContractFactory(
