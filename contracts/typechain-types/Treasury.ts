@@ -26,16 +26,24 @@ import type {
 export interface TreasuryInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "admin"
+      | "claimReward"
       | "contribution"
       | "deposit"
       | "distributeRewards"
+      | "pendingRewards"
       | "workspaceBalance"
   ): FunctionFragment;
 
   getEvent(
-    nameOrSignatureOrTopic: "Deposited" | "RewardsDistributed"
+    nameOrSignatureOrTopic: "Deposited" | "RewardClaimed" | "RewardsCalculated"
   ): EventFragment;
 
+  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "claimReward",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "contribution",
     values?: undefined
@@ -49,10 +57,19 @@ export interface TreasuryInterface extends Interface {
     values: [BigNumberish, AddressLike[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "pendingRewards",
+    values: [BigNumberish, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "workspaceBalance",
     values: [BigNumberish]
   ): string;
 
+  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "claimReward",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "contribution",
     data: BytesLike
@@ -60,6 +77,10 @@ export interface TreasuryInterface extends Interface {
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "distributeRewards",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingRewards",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -81,7 +102,20 @@ export namespace DepositedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace RewardsDistributedEvent {
+export namespace RewardClaimedEvent {
+  export type InputTuple = [user: AddressLike, amount: BigNumberish];
+  export type OutputTuple = [user: string, amount: bigint];
+  export interface OutputObject {
+    user: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RewardsCalculatedEvent {
   export type InputTuple = [
     workspaceId: BigNumberish,
     totalAmount: BigNumberish
@@ -140,6 +174,14 @@ export interface Treasury extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  admin: TypedContractMethod<[], [string], "view">;
+
+  claimReward: TypedContractMethod<
+    [workspaceId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   contribution: TypedContractMethod<[], [string], "view">;
 
   deposit: TypedContractMethod<[workspaceId: BigNumberish], [void], "payable">;
@@ -150,12 +192,24 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
 
+  pendingRewards: TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   workspaceBalance: TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "admin"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "claimReward"
+  ): TypedContractMethod<[workspaceId: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "contribution"
   ): TypedContractMethod<[], [string], "view">;
@@ -170,6 +224,13 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "pendingRewards"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "workspaceBalance"
   ): TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
@@ -181,11 +242,18 @@ export interface Treasury extends BaseContract {
     DepositedEvent.OutputObject
   >;
   getEvent(
-    key: "RewardsDistributed"
+    key: "RewardClaimed"
   ): TypedContractEvent<
-    RewardsDistributedEvent.InputTuple,
-    RewardsDistributedEvent.OutputTuple,
-    RewardsDistributedEvent.OutputObject
+    RewardClaimedEvent.InputTuple,
+    RewardClaimedEvent.OutputTuple,
+    RewardClaimedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RewardsCalculated"
+  ): TypedContractEvent<
+    RewardsCalculatedEvent.InputTuple,
+    RewardsCalculatedEvent.OutputTuple,
+    RewardsCalculatedEvent.OutputObject
   >;
 
   filters: {
@@ -200,15 +268,26 @@ export interface Treasury extends BaseContract {
       DepositedEvent.OutputObject
     >;
 
-    "RewardsDistributed(uint256,uint256)": TypedContractEvent<
-      RewardsDistributedEvent.InputTuple,
-      RewardsDistributedEvent.OutputTuple,
-      RewardsDistributedEvent.OutputObject
+    "RewardClaimed(address,uint256)": TypedContractEvent<
+      RewardClaimedEvent.InputTuple,
+      RewardClaimedEvent.OutputTuple,
+      RewardClaimedEvent.OutputObject
     >;
-    RewardsDistributed: TypedContractEvent<
-      RewardsDistributedEvent.InputTuple,
-      RewardsDistributedEvent.OutputTuple,
-      RewardsDistributedEvent.OutputObject
+    RewardClaimed: TypedContractEvent<
+      RewardClaimedEvent.InputTuple,
+      RewardClaimedEvent.OutputTuple,
+      RewardClaimedEvent.OutputObject
+    >;
+
+    "RewardsCalculated(uint256,uint256)": TypedContractEvent<
+      RewardsCalculatedEvent.InputTuple,
+      RewardsCalculatedEvent.OutputTuple,
+      RewardsCalculatedEvent.OutputObject
+    >;
+    RewardsCalculated: TypedContractEvent<
+      RewardsCalculatedEvent.InputTuple,
+      RewardsCalculatedEvent.OutputTuple,
+      RewardsCalculatedEvent.OutputObject
     >;
   };
 }
